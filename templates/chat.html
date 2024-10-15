@@ -19,6 +19,8 @@
                 border: solid 2px grey;
                 padding: 10px;
                 height: 70vh;
+                overflow-y: scroll;
+                overflow-x: hidden;
             }
             .self {
                 background-color: lightgreen;
@@ -71,9 +73,21 @@
                 width: 60vw;
                 height: 5vh;
             }
-            .message-submit {
+            .form-btn {
+                margin-left: 10px;
                 height: 5vh;
-                width: 5vw;
+                width: 8vw;
+            }
+
+            #clear-chat {
+                background-color: red;
+                border: none;
+                color: white;
+            }
+
+            #clear-chat:hover {
+                background-color: darkred;
+                border: 1px solid red;
             }
         </style>
     </head>
@@ -90,10 +104,14 @@
             />
             <button
                 id="submit-btn"
-                class="message-submit"
+                class="form-btn"
                 onclick="sendMessage(event)"
             >
                 send
+            </button>
+
+            <button id="clear-chat" class="form-btn" onclick="clearChat()">
+                Clear chat
             </button>
         </div>
     </body>
@@ -103,7 +121,15 @@
         const submitBtn = document.querySelector("#submit-btn");
         const ws = new WebSocket("/ws/{{username}}");
 
-        // message is received
+        // event listeners
+        document.addEventListener("keypress", (event) => {
+            if (event.keyCode == 13) {
+                event.preventDefault();
+                sendMessage(event);
+            }
+        });
+
+        // Manipulate HTML
         function addChatMessage(type, username, message) {
             const newChatEl = document.createElement("div");
             newChatEl.classList.add(type);
@@ -130,19 +156,32 @@
             chatArea.appendChild(newChatEl);
         }
 
-        ws.onmessage = function (event) {
-            console.log(`message received ${event.data}`);
-            const data = JSON.parse(event.data);
-            if (data.username == "system") addSystemMessage(data.message);
-            else addChatMessage("other", data.username, data.message);
-        };
+        function clearChat() {
+            chatArea.innerHTML = "";
+        }
 
+        // Automatic scroll to the latest chat
+        const config = { childList: true };
+        const scrollToBottom = (mutation, observer) => {
+            chatArea.scrollTop = chatArea.scrollHeight;
+        };
+        const observer = new MutationObserver(scrollToBottom);
+        observer.observe(chatArea, config);
+
+        // Handle WebSocket connection
         function sendMessage(event) {
+            if (messageInput.value == "") return;
             message = messageInput.value;
-            console.log(`message sent: ${message}`);
+            messageInput.value = "";
             ws.send(message);
             addChatMessage("self", "self", message);
             event.preventDefault();
         }
+
+        ws.onmessage = function (event) {
+            const data = JSON.parse(event.data);
+            if (data.username == "system") addSystemMessage(data.message);
+            else addChatMessage("other", data.username, data.message);
+        };
     </script>
 </html>
