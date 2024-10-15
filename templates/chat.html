@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Group Chat</title>
+        <style>
+            * {
+                text-decoration: none;
+            }
+
+            h1 {
+                border-bottom: 5px solid black;
+                text-align: center;
+            }
+            .chat-area {
+                display: flex;
+                flex-direction: column;
+                border: solid 2px grey;
+                padding: 10px;
+                height: 70vh;
+            }
+            .self {
+                background-color: lightgreen;
+                border-radius: 5px;
+                width: 40%;
+                margin-left: 58vw;
+                margin-top: 5px;
+            }
+            .other {
+                margin-top: 5px;
+                background-color: skyblue;
+                border-radius: 5px;
+                color: blue;
+                width: 40%;
+            }
+
+            .self .message {
+                padding: 5px;
+                font-size: 16px;
+                margin: 2px 2px;
+            }
+            .other .username {
+                padding: 5px;
+                padding-bottom: 0px;
+                margin: 2px 2px;
+                font-size: 12px;
+            }
+
+            .other .message {
+                padding: 5px;
+                padding-top: 0px;
+                margin: 2px 2px;
+                font-size: 16px;
+            }
+            .system-message {
+                margin: 2px 2px;
+                margin-top: 7px;
+                font-size: 12px;
+                background-color: grey;
+                text-align: center;
+                color: black;
+                margin-left: 30vw;
+                margin-right: 30vw;
+            }
+
+            .type-message {
+                margin: 10px;
+            }
+            .message-input {
+                width: 60vw;
+                height: 5vh;
+            }
+            .message-submit {
+                height: 5vh;
+                width: 5vw;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Group Chat {{username}}</h1>
+        <br />
+        <div id="chat-area" class="chat-area"></div>
+        <div class="type-message">
+            <input
+                id="message-input"
+                class="message-input"
+                type="text"
+                name="message"
+            />
+            <button
+                id="submit-btn"
+                class="message-submit"
+                onclick="sendMessage(event)"
+            >
+                send
+            </button>
+        </div>
+    </body>
+    <script>
+        const chatArea = document.querySelector("#chat-area");
+        const messageInput = document.querySelector("#message-input");
+        const submitBtn = document.querySelector("#submit-btn");
+        const ws = new WebSocket("/ws/{{username}}");
+
+        // message is received
+        function addChatMessage(type, username, message) {
+            const newChatEl = document.createElement("div");
+            newChatEl.classList.add(type);
+
+            if (username != "self") {
+                const usernameEl = document.createElement("p");
+                usernameEl.classList.add("username");
+                usernameEl.innerText = username;
+                newChatEl.appendChild(usernameEl);
+            }
+
+            const messageEl = document.createElement("p");
+            messageEl.classList.add("message");
+            messageEl.innerText = message;
+            newChatEl.appendChild(messageEl);
+
+            chatArea.appendChild(newChatEl);
+        }
+
+        function addSystemMessage(message) {
+            const newChatEl = document.createElement("div");
+            newChatEl.classList.add("system-message");
+            newChatEl.innerText = message;
+            chatArea.appendChild(newChatEl);
+        }
+
+        ws.onmessage = function (event) {
+            console.log(`message received ${event.data}`);
+            const data = JSON.parse(event.data);
+            if (data.username == "system") addSystemMessage(data.message);
+            else addChatMessage("other", data.username, data.message);
+        };
+
+        function sendMessage(event) {
+            message = messageInput.value;
+            console.log(`message sent: ${message}`);
+            ws.send(message);
+            addChatMessage("self", "self", message);
+            event.preventDefault();
+        }
+    </script>
+</html>
