@@ -4,7 +4,7 @@ const submitBtn = document.querySelector("#submit-btn");
 const username = document.querySelector("#username").innerText;
 const ws = new WebSocket(`/ws/chat/${username}`);
 const users = document.querySelectorAll("#user");
-const DOMAIN = "http://localhost:8000";
+const DOMAIN = "https://fastapi-chat-application.onrender.com";
 
 // event listeners
 document.addEventListener("keypress", (event) => {
