@@ -4,6 +4,7 @@ asttokens==2.4.1
 fastapi==0.114.2
 fastjsonschema==2.20.0
 Jinja2==3.1.4
+pytailwindcss==0.2.0
 json5==0.9.25
 jsonpointer==3.0.0
 jsonschema==4.23.0
@@ -32,3 +33,4 @@ webcolors==24.6.0
 webencodings==0.5.1
 websocket-client==1.8.0
 websockets==13.1
+sqlmodel==0.0.22

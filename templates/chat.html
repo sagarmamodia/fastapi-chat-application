@@ -3,185 +3,62 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="static/chat.css?version=2" />
+        <script src="static/chat.js?version=2" defer></script>
         <title>Group Chat</title>
-        <style>
-            * {
-                text-decoration: none;
-            }
-
-            h1 {
-                border-bottom: 5px solid black;
-                text-align: center;
-            }
-            .chat-area {
-                display: flex;
-                flex-direction: column;
-                border: solid 2px grey;
-                padding: 10px;
-                height: 70vh;
-                overflow-y: scroll;
-                overflow-x: hidden;
-            }
-            .self {
-                background-color: lightgreen;
-                border-radius: 5px;
-                width: 40%;
-                margin-left: 58vw;
-                margin-top: 5px;
-            }
-            .other {
-                margin-top: 5px;
-                background-color: skyblue;
-                border-radius: 5px;
-                color: blue;
-                width: 40%;
-            }
-
-            .self .message {
-                padding: 5px;
-                font-size: 16px;
-                margin: 2px 2px;
-            }
-            .other .username {
-                padding: 5px;
-                padding-bottom: 0px;
-                margin: 2px 2px;
-                font-size: 12px;
-            }
-
-            .other .message {
-                padding: 5px;
-                padding-top: 0px;
-                margin: 2px 2px;
-                font-size: 16px;
-            }
-            .system-message {
-                margin: 2px 2px;
-                margin-top: 7px;
-                font-size: 12px;
-                background-color: grey;
-                text-align: center;
-                color: black;
-                margin-left: 30vw;
-                margin-right: 30vw;
-            }
-
-            .type-message {
-                margin: 10px;
-            }
-            .message-input {
-                width: 60vw;
-                height: 5vh;
-            }
-            .form-btn {
-                margin-left: 10px;
-                height: 5vh;
-                width: 8vw;
-            }
-
-            #clear-chat {
-                background-color: red;
-                border: none;
-                color: white;
-            }
-
-            #clear-chat:hover {
-                background-color: darkred;
-                border: 1px solid red;
-            }
-        </style>
     </head>
     <body>
-        <h1>Group Chat {{username}}</h1>
-        <br />
-        <div id="chat-area" class="chat-area"></div>
-        <div class="type-message">
-            <input
-                id="message-input"
-                class="message-input"
-                type="text"
-                name="message"
-            />
-            <button
-                id="submit-btn"
-                class="form-btn"
-                onclick="sendMessage(event)"
-            >
-                send
-            </button>
+        <div class="header">
+            <div class="logo">
+                <img src="static/images/logo.svg" />
+                <h2><a href="/">Messenger</a></h2>
+            </div>
+            <div class="profile">
+                <img src="static/images/default-profile-photo.jpeg" />
+                <span id="username">{{username}}</span>
+            </div>
+        </div>
 
-            <button id="clear-chat" class="form-btn" onclick="clearChat()">
-                Clear chat
-            </button>
+        <div class="main-area">
+            <div class="users">
+                <h3>All users</h3>
+                {% for user in users %}
+                <div id="user" class="side-panel user">
+                    <img src="static/images/default-profile-photo.jpeg" />
+                    <span id="username">{{user}}</span>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="chat-interface">
+                <div class="receiver-container">
+                    <h1 id="receiver" class="receiver"></h1>
+                </div>
+                <div id="chat-area" class="chat-area"></div>
+                <div class="type-message">
+                    <input
+                        id="message-input"
+                        class="message-input"
+                        type="text"
+                        name="message"
+                    />
+                    <button
+                        id="submit-btn"
+                        class="form-btn"
+                        onclick="sendMessage(event)"
+                    >
+                        send
+                    </button>
+
+                    <button
+                        id="clear-chat"
+                        class="form-btn"
+                        onclick="clearChat()"
+                    >
+                        Clear chat
+                    </button>
+                </div>
+            </div>
         </div>
     </body>
-    <script>
-        const chatArea = document.querySelector("#chat-area");
-        const messageInput = document.querySelector("#message-input");
-        const submitBtn = document.querySelector("#submit-btn");
-        const ws = new WebSocket("/ws/{{username}}");
-
-        // event listeners
-        document.addEventListener("keypress", (event) => {
-            if (event.keyCode == 13) {
-                event.preventDefault();
-                sendMessage(event);
-            }
-        });
-
-        // Manipulate HTML
-        function addChatMessage(type, username, message) {
-            const newChatEl = document.createElement("div");
-            newChatEl.classList.add(type);
-
-            if (username != "self") {
-                const usernameEl = document.createElement("p");
-                usernameEl.classList.add("username");
-                usernameEl.innerText = username;
-                newChatEl.appendChild(usernameEl);
-            }
-
-            const messageEl = document.createElement("p");
-            messageEl.classList.add("message");
-            messageEl.innerText = message;
-            newChatEl.appendChild(messageEl);
-
-            chatArea.appendChild(newChatEl);
-        }
-
-        function addSystemMessage(message) {
-            const newChatEl = document.createElement("div");
-            newChatEl.classList.add("system-message");
-            newChatEl.innerText = message;
-            chatArea.appendChild(newChatEl);
-        }
-
-        function clearChat() {
-            chatArea.innerHTML = "";
-        }
-
-        // Automatic scroll to the latest chat
-        const config = { childList: true };
-        const scrollToBottom = (mutation, observer) => {
-            chatArea.scrollTop = chatArea.scrollHeight;
-        };
-        const observer = new MutationObserver(scrollToBottom);
-        observer.observe(chatArea, config);
-
-        // Handle WebSocket connection
-        function sendMessage(event) {
-            if (messageInput.value == "") return;
-            message = messageInput.value;
-            messageInput.value = "";
-            ws.send(message);
-            addChatMessage("self", "self", message);
-            event.preventDefault();
-        }
-
-        ws.onmessage = function (event) {
-            const data = JSON.parse(event.data);
-            if (data.username == "system") addSystemMessage(data.message);
-            else addChatMessage("other", data.username, data.message);
-        };
-    </script>
 </html>

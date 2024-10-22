@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="static/authentication.css" />
+        <title>Group Chat</title>
+    </head>
+    <body>
+        <div class="page">
+            <div class="header">
+                <img src="static/images/logo.svg" />
+                <h1>Messenger</h1>
+            </div>
+            <div class="form">
+                <form method="POST" enctype="form/multipart">
+                    <div class="input-field username-input">
+                        <label for="username">Username</label>
+                        <input type="text" name="username" />
+                    </div>
+                    <div class="input-field email-input">
+                        <label for="email"> E-mail </label>
+                        <input type="email" name="email" />
+                    </div>
+                    <div class="input-field password-input">
+                        <label for="password">Password</label>
+                        <input type="password" name="password" />
+                    </div>
+                    <div class="submit-btns">
+                        <button
+                            type="button"
+                            class="signup form-btn"
+                            onclick="signup()"
+                        >
+                            Sign Up
+                        </button>
+                        <button
+                            type="button"
+                            class="signin form-btn"
+                            onclick="signin()"
+                        >
+                            Sign In
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </body>
+    <script>
+        const form = document.querySelector("form");
+
+        function signin(event) {
+            console.log("signin request sent");
+            form.action = "/signin";
+            form.submit();
+        }
+
+        function signup(event) {
+            console.log("signup request sent");
+            form.action = "/signup";
+            form.submit();
+        }
+    </script>
+</html>

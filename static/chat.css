@@ -1,0 +1,175 @@
+* {
+    padding: 0;
+    margin: 0;
+    font-family: "Courier New", Courier, monospace;
+}
+
+/* ==================================== Header =============================== */
+
+.logo img {
+    width: 3vw;
+    height: 3vw;
+    /* border: 2px solid black; */
+}
+
+.logo {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 5px;
+    margin-left: 20px;
+}
+
+.profile {
+    margin: 5px;
+    margin-right: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.profile img {
+    width: 3vw;
+    height: 3vw;
+    border-radius: 50%;
+}
+
+.header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    background-color: bisque;
+    border-bottom: 2px solid silver;
+    margin-bottom: 5px;
+}
+
+/* ================================== Main Area ==========================*/
+
+.main-area {
+    display: flex;
+    flex-direction: row;
+}
+
+/* =================================== User Section ============================== */
+
+.user {
+    margin: 5px;
+    padding: 2px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.user:hover {
+    border: 1px solid grey;
+}
+
+.user:active {
+    background-color: bisque;
+}
+
+.users img {
+    width: 3vw;
+    height: 3vw;
+    border-radius: 50%;
+}
+
+.users {
+    display: flex;
+    flex-direction: column;
+    margin: 0 2vw;
+}
+
+.selected-user {
+    background-color: bisque;
+    border: none;
+}
+
+.active-user img {
+    border: lightgreen 2px solid;
+}
+
+.user span {
+    font-size: 0.8rem;
+}
+
+/* ========================================= Chat Interface ============================ */
+
+.receiver {
+    background-color: bisque;
+    height: 5vh;
+    padding: 5px;
+}
+
+.chat-area {
+    display: flex;
+    flex-direction: column;
+    border: solid 2px grey;
+    padding: 10px;
+    height: 70vh;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+.self {
+    background-color: lightgreen;
+    border-radius: 5px;
+    width: 30vw;
+    margin-left: 44vw;
+    margin-top: 0.4vw;
+}
+.other {
+    margin-top: 5px;
+    background-color: skyblue;
+    border-radius: 5px;
+    color: blue;
+    width: 30vw;
+}
+
+.self .message {
+    padding: 0.4vw;
+    font-size: 1.5vw;
+    margin: 0.1vw 0.1vw;
+}
+
+.other .message {
+    padding: 0.4vw;
+    padding-top: 0.1vw;
+    margin: 0.1vw 0vw;
+    font-size: 1.5vw;
+}
+.system-message {
+    margin: 2px 2px;
+    margin-top: 7px;
+    font-size: 12px;
+    background-color: grey;
+    text-align: center;
+    color: black;
+    margin-left: 30vw;
+    margin-right: 30vw;
+}
+
+.type-message {
+    margin: 1vw;
+    display: flex;
+    flex-direction: row;
+}
+.message-input {
+    width: 60vw;
+    height: 5vh;
+}
+.form-btn {
+    margin-left: 1vw;
+    height: 5vh;
+    width: 8vw;
+}
+
+#clear-chat {
+    background-color: red;
+    border: none;
+    color: white;
+}
+
+#clear-chat:hover {
+    background-color: darkred;
+    border: 1px solid red;
+}
